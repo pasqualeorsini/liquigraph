@@ -1,0 +1,7 @@
+<entityChangeset>
+    <insert entity="org.liquigraph.ogm.entity.Movie">
+        <property name="id" value="42"/>
+        <property name="title" value="Matrix"/>
+        <property name="language" value="English"/>
+    </insert>
+</entityChangeset>
