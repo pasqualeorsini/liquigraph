@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement
-public class Update implements Action{
+public class Update extends Action{
     private String id;
 
     private List<Property> propertyList;

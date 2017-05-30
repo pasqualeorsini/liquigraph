@@ -29,36 +29,5 @@ public class EntityTest {
         assertEquals(2, update.getPropertyList().size());
     }
 
-    @Test
-    public void marshallInsert() throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(EntityChangeset.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        Insert insert1 = new Insert();
-        ArrayList<Property> properties = new ArrayList<>();
-        Property property = new Property();
-        property.setName("title");
-        property.setValue("Batman");
-        Property property1 = new Property();
-        property1.setName("language");
-        property1.setValue("French");
 
-        properties.add(property);
-        properties.add(property1);
-        insert1.setProperties(properties);
-
-        Update update = new Update();
-        update.setId("12");
-        update.setPropertyList(properties);
-
-        EntityChangeset entityChangeset = new EntityChangeset();
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(insert1);
-        actionList.add(update);
-        entityChangeset.setActionList(actionList);
-
-
-        marshaller.marshal(entityChangeset, System.out);
-
-    }
 }
