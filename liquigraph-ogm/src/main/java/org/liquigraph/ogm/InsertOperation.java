@@ -1,5 +1,8 @@
 package org.liquigraph.ogm;
 
+import org.liquigraph.ogm.exception.GraphIdException;
+import org.liquigraph.ogm.exception.MappingException;
+import org.liquigraph.ogm.exception.NotAnOgmEntityException;
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.RelationshipEntity;
@@ -17,7 +20,7 @@ public class InsertOperation {
         this.properties = properties;
     }
 
-    public Object resolveEntity() {
+    public Object resolveEntity() throws NotAnOgmEntityException, GraphIdException {
         // use reflection to instantiate class and set properties
         // edge cases (TODO unit tests) :
         //  - class exists
@@ -29,36 +32,44 @@ public class InsertOperation {
             entityClass = Class.forName(this.entityName);
             NodeEntity[] nodeAnnotation = entityClass.getDeclaredAnnotationsByType(NodeEntity.class);
             RelationshipEntity[] relationshipAnnotation = entityClass.getDeclaredAnnotationsByType(RelationshipEntity.class);
-            if(relationshipAnnotation.length>0 || nodeAnnotation.length > 0){
+            if (relationshipAnnotation.length > 0 || nodeAnnotation.length > 0) {
                 Object instance = entityClass.newInstance();
                 for (OgmProperty property : this.properties) {
                     setValue(entityClass, instance, property.getName(), property.getValue());
                 }
             } else {
-                return null;
+                throw new NotAnOgmEntityException("This entity is not annotated with @NodeEntity or @RelationEntity : " + this.entityName);
             }
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException | InstantiationException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             return null;
+        } catch (MappingException e) {
+            e.printStackTrace();
         }
 
         return entityClass;
     }
 
-    private  static void setValue(Class clazz, Object entity, String name, Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field declaredField = clazz.getDeclaredField(name);
-        declaredField.setAccessible(true);
-        GraphId[] graphIdAnnotation = declaredField.getAnnotationsByType(GraphId.class);
-        if(graphIdAnnotation.length==0) {
-            if(value.getClass().equals(String.class)) {
-                if (declaredField.getType().equals(Long.class)) {
-                    declaredField.set(entity, Long.parseLong((String) value));
-                } else {
-                    declaredField.set(entity, value);
+    private static void setValue(Class clazz, Object entity, String name, Object value) throws MappingException, GraphIdException {
+        try {
+            Field declaredField = clazz.getDeclaredField(name);
+            declaredField.setAccessible(true);
+            GraphId[] graphIdAnnotation = declaredField.getAnnotationsByType(GraphId.class);
+            if (graphIdAnnotation.length == 0) {
+                if (value.getClass().equals(String.class)) {
+                    if (declaredField.getType().equals(Long.class)) {
+                        declaredField.set(entity, Long.parseLong((String) value));
+                    } else {
+                        declaredField.set(entity, value);
+                    }
+                    declaredField.setAccessible(false);
                 }
-                declaredField.setAccessible(false);
+            } else {
+                throw new GraphIdException("Can't map a graphid field");
             }
+
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new MappingException("This OGMProperty is not available on this entity", e);
         }
 
     }
-
 }

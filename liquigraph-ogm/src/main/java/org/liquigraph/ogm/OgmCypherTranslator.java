@@ -1,10 +1,12 @@
 package org.liquigraph.ogm;
 
+import org.liquigraph.ogm.exception.GraphIdException;
+import org.liquigraph.ogm.exception.NotAnOgmEntityException;
 import org.neo4j.ogm.request.Statement;
 
 public class OgmCypherTranslator {
 
-    public String translate(InsertOperation insert) {
+    public String translate(InsertOperation insert) throws NotAnOgmEntityException, GraphIdException {
         Object entity = insert.resolveEntity();
         Statement statement = compileStatement(entity);
         return normalizeCypherQUery(statement);
