@@ -34,12 +34,14 @@ public class InsertOperation {
                 for (OgmProperty property : this.properties) {
                     setValue(entityClass, instance, property.getName(), property.getValue());
                 }
+            } else {
+                return null;
             }
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException | InstantiationException e) {
             return null;
         }
 
-        return null;
+        return entityClass;
     }
 
     private  static void setValue(Class clazz, Object entity, String name, Object value) throws NoSuchFieldException, IllegalAccessException {
@@ -47,12 +49,14 @@ public class InsertOperation {
         declaredField.setAccessible(true);
         GraphId[] graphIdAnnotation = declaredField.getAnnotationsByType(GraphId.class);
         if(graphIdAnnotation.length==0) {
-            if (declaredField.getType().equals(Long.class)) {
-                declaredField.set(entity, Long.parseLong(value));
-            } else {
-                declaredField.set(entity, value);
+            if(value.getClass().equals(String.class)) {
+                if (declaredField.getType().equals(Long.class)) {
+                    declaredField.set(entity, Long.parseLong((String) value));
+                } else {
+                    declaredField.set(entity, value);
+                }
+                declaredField.setAccessible(false);
             }
-            declaredField.setAccessible(false);
         }
 
     }
