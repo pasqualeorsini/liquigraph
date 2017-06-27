@@ -4,11 +4,11 @@ import org.liquigraph.ogm.schema.Action;
 import org.liquigraph.ogm.schema.Insert;
 import org.liquigraph.ogm.schema.Property;
 import org.liquigraph.ogm.schema.Update;
-import org.neo4j.ogm.MetaData;
-import org.neo4j.ogm.compiler.CompileContext;
-import org.neo4j.ogm.compiler.Compiler;
 import org.neo4j.ogm.context.EntityGraphMapper;
 import org.neo4j.ogm.context.MappingContext;
+import org.neo4j.ogm.cypher.compiler.CompileContext;
+import org.neo4j.ogm.cypher.compiler.Compiler;
+import org.neo4j.ogm.metadata.MetaData;
 import org.neo4j.ogm.request.Statement;
 import org.neo4j.ogm.session.request.RowStatementFactory;
 
@@ -24,7 +24,6 @@ public class Main {
         MetaData metaData = new MetaData("org.liquigraph.ogm");
 
         EntityGraphMapper entityGraphMapper = new EntityGraphMapper(metaData, new MappingContext(metaData));
-
 
 
         CompileContext compileContext = entityGraphMapper.map(movie);
@@ -65,16 +64,16 @@ public class Main {
         Class<?> aClass = Class.forName(action.getEntity());
         Object entity = aClass.newInstance();
 
-        if(action instanceof Insert){
+        if (action instanceof Insert) {
             // Insert must not have an id field
             Insert insert = (Insert) action;
-            if(hasIdProperty(insert)){
+            if (hasIdProperty(insert)) {
                 for (Property property : insert.getProperties()) {
                     setValue(aClass, entity, property.getName(), property.getValue());
                 }
             }
 
-        } else if(action instanceof Update){
+        } else if (action instanceof Update) {
             // Update can't have an id field in properties
             Update update = (Update) action;
 
@@ -84,12 +83,12 @@ public class Main {
         return entity;
     }
 
-    private  static void setValue(Class clazz, Object entity, String name, String value) throws NoSuchFieldException, IllegalAccessException {
+    private static void setValue(Class clazz, Object entity, String name, String value) throws NoSuchFieldException, IllegalAccessException {
         Field declaredField = clazz.getDeclaredField(name);
         declaredField.setAccessible(true);
-        if(declaredField.getType().equals(Long.class)) {
+        if (declaredField.getType().equals(Long.class)) {
             declaredField.set(entity, Long.parseLong(value));
-        } else{
+        } else {
             declaredField.set(entity, value);
         }
         declaredField.setAccessible(false);
@@ -98,7 +97,7 @@ public class Main {
 
     private static boolean hasIdProperty(Insert insert) {
         for (Property property : insert.getProperties()) {
-            if("id".equals(property.getName())){
+            if ("id".equals(property.getName())) {
                 return true;
             }
         }
