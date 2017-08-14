@@ -1,16 +1,20 @@
 package org.liquigraph.ogm;
 
+import org.liquigraph.core.io.lock.LiquigraphLock;
 import org.liquigraph.ogm.exception.GraphIdException;
 import org.liquigraph.ogm.exception.MappingException;
 import org.liquigraph.ogm.exception.NotAnOgmEntityException;
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.RelationshipEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
 public class InsertOperation {
+    private static final Logger LOGGER = LoggerFactory.getLogger(InsertOperation.class);
     private final String entityName;
     private final List<OgmProperty> properties;
 
@@ -43,7 +47,7 @@ public class InsertOperation {
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             return null;
         } catch (MappingException e) {
-            e.printStackTrace();
+            LOGGER.error("This entity ("+this.entityName+") can't be mapped",e);
         }
 
         return entityClass;
