@@ -14,7 +14,7 @@ public class OgmCypherTranslatorTest {
     public void translates_insert_action_to_Cypher() throws NotAnOgmEntityException, GraphIdException {
         ArrayList<OgmProperty> properties = new ArrayList<>();
         properties.add(new OgmProperty("title","Matrix"));
-        InsertOperation insert = new InsertOperation("org.liquigraph.ogm.examples.Movie", properties);
+        InsertOperation insert = new InsertOperation("org.liquigraph.ogm.Movie", properties);
 
         String cypher = new OgmCypherTranslator().translate(insert);
 

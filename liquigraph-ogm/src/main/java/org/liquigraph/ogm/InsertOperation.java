@@ -1,6 +1,5 @@
 package org.liquigraph.ogm;
 
-import org.liquigraph.core.io.lock.LiquigraphLock;
 import org.liquigraph.ogm.exception.GraphIdException;
 import org.liquigraph.ogm.exception.MappingException;
 import org.liquigraph.ogm.exception.NotAnOgmEntityException;
@@ -27,10 +26,10 @@ public class InsertOperation {
     public Object resolveEntity() throws NotAnOgmEntityException, GraphIdException {
         // use reflection to instantiate class and set properties
         // edge cases (TODO unit tests) :
-        //  - class exists
+        //  - class exists OK
         //  - class is an OGM entity (@NodeEntity / @RelationEntity)
-        //  - properties exists and value type is compatible
-        //  - do not assign @GraphId properties !!
+        //  - properties exists and value type is compatible OK
+        //  - do not assign @GraphId properties !! OK
         Class<?> entityClass = null;
         try {
             entityClass = Class.forName(this.entityName);
@@ -41,6 +40,8 @@ public class InsertOperation {
                 for (OgmProperty property : this.properties) {
                     setValue(entityClass, instance, property.getName(), property.getValue());
                 }
+
+                return instance;
             } else {
                 throw new NotAnOgmEntityException("This entity is not annotated with @NodeEntity or @RelationEntity : " + this.entityName);
             }
@@ -50,7 +51,7 @@ public class InsertOperation {
             LOGGER.error("This entity ("+this.entityName+") can't be mapped",e);
         }
 
-        return entityClass;
+        return null;
     }
 
     private static void setValue(Class clazz, Object entity, String name, Object value) throws MappingException, GraphIdException {
