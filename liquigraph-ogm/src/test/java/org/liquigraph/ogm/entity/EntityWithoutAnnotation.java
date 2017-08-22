@@ -1,4 +1,4 @@
-package org.liquigraph.ogm;
+package org.liquigraph.ogm.entity;
 
 public class EntityWithoutAnnotation {
     private String aProperty;

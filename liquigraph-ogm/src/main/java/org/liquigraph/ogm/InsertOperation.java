@@ -24,12 +24,6 @@ public class InsertOperation {
     }
 
     public Object resolveEntity() throws NotAnOgmEntityException, GraphIdException {
-        // use reflection to instantiate class and set properties
-        // edge cases (TODO unit tests) :
-        //  - class exists OK
-        //  - class is an OGM entity (@NodeEntity / @RelationEntity)
-        //  - properties exists and value type is compatible OK
-        //  - do not assign @GraphId properties !! OK
         Class<?> entityClass = null;
         try {
             entityClass = Class.forName(this.entityName);
@@ -48,7 +42,7 @@ public class InsertOperation {
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             return null;
         } catch (MappingException e) {
-            LOGGER.error("This entity ("+this.entityName+") can't be mapped",e);
+            LOGGER.error("This entity ({}) can't be mapped : {}",entityClass.getName(),e);
         }
 
         return null;
@@ -69,11 +63,11 @@ public class InsertOperation {
                     declaredField.setAccessible(false);
                 }
             } else {
-                throw new GraphIdException("Can't map a graphid field");
+                throw new GraphIdException("It's impossible to map a graphid field");
             }
 
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new MappingException("This OGMProperty is not available on this entity", e);
+            throw new MappingException("An OGMProperty is not available on this entity", e);
         }
 
     }

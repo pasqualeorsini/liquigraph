@@ -1,4 +1,4 @@
-package org.liquigraph.ogm;
+package org.liquigraph.ogm.entity;
 
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;

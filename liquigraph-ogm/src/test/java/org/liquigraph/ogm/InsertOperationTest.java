@@ -19,7 +19,7 @@ public class InsertOperationTest {
 
     @Test(expected = NotAnOgmEntityException.class)
     public void anEntityWithoutAnnotationsCantBeMapped() throws NotAnOgmEntityException, GraphIdException {
-        InsertOperation insertOperation = new InsertOperation("org.liquigraph.ogm.EntityWithoutAnnotation", new ArrayList<>());
+        InsertOperation insertOperation = new InsertOperation("org.liquigraph.ogm.entity.EntityWithoutAnnotation", new ArrayList<>());
 
         insertOperation.resolveEntity();
     }
@@ -29,7 +29,7 @@ public class InsertOperationTest {
         ArrayList<OgmProperty> properties = new ArrayList<>();
         properties.add(new OgmProperty("id",10));
         properties.add(new OgmProperty("aProperty","toto"));
-        InsertOperation insertOperation = new InsertOperation("org.liquigraph.ogm.EntityWithGraphId", properties);
+        InsertOperation insertOperation = new InsertOperation("org.liquigraph.ogm.entity.EntityWithGraphId", properties);
         insertOperation.resolveEntity();
 
     }
