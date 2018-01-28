@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,20 @@ import org.liquigraph.spring.SpringLiquigraph;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.validation.constraints.NotNull;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties to configure {@link SpringLiquigraph}.
  *
  * @author Michael Vitz
+ * @author Florent Biville
  */
 @ConfigurationProperties(prefix = "liquigraph", ignoreUnknownFields = false)
 public final class LiquigraphProperties {
 
     /**
      * Change log configuration path.
+     * Favor 'changelog' over 'changeLog' property name.
      */
     @NotNull
     private String changeLog = "classpath:/db/liquigraph/changelog.xml";
@@ -51,10 +54,25 @@ public final class LiquigraphProperties {
     private String password;
 
     /**
-     * JDBC url of the database to migrate. If not set, the primary configured data source is used.
+     * JDBC URL of the database to migrate.
+     * If not set, the primary configured data source is used.
      */
     private String url;
 
+    /**
+     * Liquigraph runtime execution contexts.
+     *
+     * Changesets will match:
+     *  - if they define no execution context
+     *  - if one of their contexts matches one of the runtime contexts
+     */
+    private String[] executionContexts = new String[0];
+
+    public void setChangelog(String changelog) {
+        setChangeLog(changelog);
+    }
+
+    @DeprecatedConfigurationProperty(reason = "Typo", replacement = "changelog")
     public String getChangeLog() {
         return changeLog;
     }
@@ -93,5 +111,13 @@ public final class LiquigraphProperties {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String[] getExecutionContexts() {
+        return executionContexts;
+    }
+
+    public void setExecutionContexts(String[] executionContexts) {
+        this.executionContexts = executionContexts;
     }
 }

@@ -14,16 +14,31 @@ env:
     - NEO_VERSION=3.0.11
       WITH_DOCKER=true
       EXTRA_PROFILES=-Pwith-neo4j-io
-    - NEO_VERSION=3.1.6
+    - NEO_VERSION=3.1.7
       WITH_DOCKER=true
       EXTRA_PROFILES=-Pwith-neo4j-io
-    - NEO_VERSION=3.2.3
+    - NEO_VERSION=3.2.8
       WITH_DOCKER=true
       EXTRA_PROFILES=-Pwith-neo4j-io
+    - NEO_VERSION=3.2.9
+      EXTRA_PROFILES=-Pwith-neo4j-io
+    - NEO_VERSION=3.3.1
+      WITH_DOCKER=true
+      EXTRA_PROFILES=-Pwith-neo4j-io
+addons:
+  sonarqube:
+    organization: ${SONAR_ORGANIZATION}
+    token:
+      secure: ${SONAR_TOKEN}
+    github_token:
+      secure: ${GITHUB_TOKEN}
 before_script:
-script: build/run.sh
-install: true
+script:
+  - build/run.sh
+  - sonar-scanner
+install:
+  - mvn -B -V install -DskipTests=true
 after_success:
-  - mvn clean test jacoco:report coveralls:report
+  - mvn -B -V clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar coveralls:report
   - "[ ${TRAVIS_PULL_REQUEST} = 'false' ] && [[ ${TRAVIS_BRANCH} = 'master' ]] && mvn clean deploy -DskipTests --settings ./deploy-settings.xml"
 

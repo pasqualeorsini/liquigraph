@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.liquigraph.core;
 
 import com.google.common.base.Optional;
+import java.sql.ResultSet;
 import org.junit.Assume;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.Description;
@@ -37,7 +38,7 @@ public class HttpGraphDatabaseRule extends ExternalResource
     private final String uri;
     private final String username;
     private final String password;
-    private Collection<Connection> connections = new ArrayList<>();
+    private final Collection<Connection> connections = new ArrayList<>();
 
     public HttpGraphDatabaseRule() {
         uri = "jdbc:neo4j:http://localhost:7474";
@@ -113,14 +114,17 @@ public class HttpGraphDatabaseRule extends ExternalResource
     private void emptyDatabase() throws SQLException {
         try (Connection connection = newConnection()) {
             try (java.sql.Statement statement = connection.createStatement()) {
-                assertThat(statement.execute("OPTIONAL MATCH (n) DETACH DELETE n")).isTrue();
+                statement.execute("MATCH (n) DETACH DELETE n");
             }
             connection.commit();
         }
         try (Connection connection = newConnection();
-             java.sql.Statement statement = connection.createStatement()) {
+             java.sql.Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("MATCH (n) RETURN n")) {
 
-            assertThat(statement.executeQuery("MATCH (n) RETURN n").next()).isFalse();
+            assertThat(resultSet.next())
+                .as("Database is empty")
+                .isFalse();
         }
     }
 

@@ -10,7 +10,7 @@
 
     <groupId>org.liquigraph</groupId>
     <artifactId>liquigraph-parent</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>liquigraph-parent</name>
@@ -23,12 +23,15 @@
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <neo4j.version>3.0.2</neo4j.version>
-        <slf4j.version>1.7.21</slf4j.version>
-        <logback.version>1.1.7</logback.version>
+        <neo4j.version>3.0.0</neo4j.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <logback.version>1.2.3</logback.version>
         <!-- JaCoCo needs this as a property -->
         <argLine>-Duser.language=en -Xmx1024m</argLine>
         <generateBackupPoms>false</generateBackupPoms>
+        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+        <jetty.version>9.2.9.v20150224</jetty.version>
+        <neo4j-jdbc.version>3.1.0</neo4j-jdbc.version>
     </properties>
 
     <modules>
@@ -39,8 +42,8 @@
         <!-- Liquigraph integration examples -->
         <module>liquigraph-examples/dagger2</module>
         <module>liquigraph-ogm</module>
+        <module>liquigraph-examples/spring-boot</module>
     </modules>
-
     <build>
         <plugins>
             <plugin>

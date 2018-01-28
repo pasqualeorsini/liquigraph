@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,6 @@
  */
 package org.liquigraph.core.io.lock;
 
-import org.liquigraph.core.exception.LiquigraphLockException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -26,6 +22,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+import org.liquigraph.core.exception.LiquigraphLockException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Sets.newIdentityHashSet;
 

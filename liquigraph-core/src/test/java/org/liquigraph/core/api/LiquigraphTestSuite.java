@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright 2014-2018 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,16 @@ import org.liquigraph.core.GraphIntegrationTestSuite;
 import org.liquigraph.core.configuration.ConfigurationBuilder;
 
 import java.sql.*;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 abstract class LiquigraphTestSuite implements GraphIntegrationTestSuite {
+
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+    }
 
     private Liquigraph liquigraph;
 
@@ -63,14 +68,16 @@ abstract class LiquigraphTestSuite implements GraphIntegrationTestSuite {
             )) {
 
                 statement.setObject(1, "insert-fbiville");
-                ResultSet resultSet = statement.executeQuery();
-                assertThat(resultSet.next()).isTrue();
-                assertThat(resultSet.next()).isFalse();
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    assertThat(resultSet.next()).isTrue();
+                    assertThat(resultSet.next()).isFalse();
+                }
 
                 statement.setObject(1, "insert-fbiville-again");
-                resultSet = statement.executeQuery();
-                assertThat(resultSet.next()).isTrue();
-                assertThat(resultSet.next()).isFalse();
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    assertThat(resultSet.next()).isTrue();
+                    assertThat(resultSet.next()).isFalse();
+                }
                 connection.commit();
             }
         }
