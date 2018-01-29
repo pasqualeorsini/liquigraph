@@ -12,15 +12,19 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class InsertOperation {
-    private static final Logger LOGGER = LoggerFactory.getLogger(InsertOperation.class);
+public class Operation {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Operation.class);
     private final String entityName;
-    private final List<OgmProperty> properties;
+    public final List<OgmProperty> properties;
+    private String label;
+    private String operationType;
 
-    public InsertOperation(String entityName, List<OgmProperty> properties) {
+    public Operation(String entityName, List<OgmProperty> properties, String operationType) {
 
         this.entityName = entityName;
+        this.label =entityName.split("\\.")[entityName.split("\\.").length-1];
         this.properties = properties;
+        this.operationType = operationType;
     }
 
     public Object resolveEntity() throws NotAnOgmEntityException, GraphIdException {
@@ -70,5 +74,17 @@ public class InsertOperation {
             throw new MappingException("An OGMProperty is not available on this entity", e);
         }
 
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
     }
 }

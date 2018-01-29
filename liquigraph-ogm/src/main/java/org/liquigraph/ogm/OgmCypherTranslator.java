@@ -6,63 +6,51 @@ import org.neo4j.ogm.context.EntityGraphMapper;
 import org.neo4j.ogm.context.MappingContext;
 import org.neo4j.ogm.cypher.compiler.CompileContext;
 import org.neo4j.ogm.cypher.compiler.Compiler;
+import org.neo4j.ogm.cypher.query.CypherQuery;
 import org.neo4j.ogm.metadata.MetaData;
 import org.neo4j.ogm.request.Statement;
 import org.neo4j.ogm.session.request.RowStatementFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class OgmCypherTranslator {
 
-    public String translate(InsertOperation insert) throws NotAnOgmEntityException, GraphIdException {
-        Object entity = insert.resolveEntity();
-        Statement statement = compileStatement(entity);
-        return normalizeCypherQUery(statement);
-    }
-
-    private Statement compileStatement(Object entity) {
-        // TODO: use OGM compiler to get all statements
-        // make sure there is only one
-        // return it
-        MetaData metaData = new MetaData("org.liquigraph.ogm");
-
-        EntityGraphMapper entityGraphMapper = new EntityGraphMapper(metaData, new MappingContext(metaData));
+    public CypherQuery translate(Operation operation) throws NotAnOgmEntityException, GraphIdException {
+        if("CREATE".equals(operation.getOperationType())) {
+            String createQuery = "CREATE (n:" + operation.getLabel() + ") SET n = $props";
+            Map props = new HashMap<>();
+            Map properties = new HashMap<>();
 
 
-        CompileContext compileContext = entityGraphMapper.map(entity);
-        Compiler compiler = compileContext.getCompiler();
+            props.put("props", properties);
 
-        compiler.useStatementFactory(new RowStatementFactory());
-        return compiler.getAllStatements().get(0);
-
-    }
-
-    private String normalizeCypherQUery(Statement statement) {
-        // TODO: un-parameterize the statement
-        // "easy": only 1 row to insert !
-        // UNWIND {rows} CREATE -----> CREATE
-
-        String patternUnwind = ".*CREATE \\(n:`(.*?)`\\).*";
-        Matcher matcher = Pattern.compile(patternUnwind).matcher(statement.getStatement());
-
-        if(matcher.matches()){
-            ArrayList rows = (ArrayList) statement.getParameters().get("rows");
-            Map<String, String> props = ((Map<String, Map>) rows.get(0)).get("props");
-
-            String attributesQuery = "{";
-
-            for (String key : props.keySet()) {
-                String value = props.get(key);
-                attributesQuery += key + ":'" + value+"'";
+            for (OgmProperty property : operation.properties) {
+                properties.put(property.getName(), property.getValue());
             }
-            attributesQuery += "}";
-            return "CREATE (:"+matcher.group(1)+" " + attributesQuery + ") ";
+            CypherQuery cypherQuery = new CypherQuery(createQuery, props);
+            return cypherQuery;
+        } else if("UPDATE".equals(operation.getOperationType())) {
+            String createQuery = "MATCH (n {id : \"placeholder\") SET n = $props";
+            Map props = new HashMap<>();
+            Map properties = new HashMap<>();
+
+            props.put("props", properties);
+
+            for (OgmProperty property : operation.properties) {
+                properties.put(property.getName(), property.getValue());
+            }
+            CypherQuery cypherQuery = new CypherQuery(createQuery, props);
+            return cypherQuery;
+
+        } else {
+            throw new UnsupportedOperationException();
         }
 
-        return null;
-
     }
+
+
 }
