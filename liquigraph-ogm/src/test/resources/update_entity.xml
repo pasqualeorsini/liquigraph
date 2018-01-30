@@ -1,6 +1,9 @@
 <entityChangeset>
-    <update entity="org.liquigraph.ogm.entity.Movie" id="42">
+    <update entity="org.liquigraph.ogm.entity.Movie">
         <property name="title" value="Matrix 2"/>
         <property name="language" value="English"/>
+        <where>
+            <property name="language" value="English"/>
+        </where>
     </update>
 </entityChangeset>

@@ -10,7 +10,8 @@ public class EntityChangeset {
 
     @XmlElements({
             @XmlElement(name = "insert", type = Insert.class),
-            @XmlElement(name = "update", type = Update.class)
+            @XmlElement(name = "update", type = Update.class),
+            @XmlElement(name = "delete", type = Delete.class)
     })
     public List<Action> getActionList() {
         return actionList;

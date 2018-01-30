@@ -25,9 +25,17 @@ public class EntityTest {
     public void unmarshallUpdate() throws JAXBException {
         EntityChangeset changeset = JAXB.unmarshal(getClass().getResourceAsStream("update_entity.xml"), EntityChangeset.class);
         Update update = (Update) changeset.getActionList().get(0);
-        assertEquals("42", update.getId());
         assertEquals(2, update.getPropertyList().size());
+        assertEquals(1,update.getWhere().getPropertyList().size());
     }
+
+    @Test
+    public void unmarshallDelete() throws JAXBException {
+        EntityChangeset changeset = JAXB.unmarshal(getClass().getResourceAsStream("delete_entity.xml"), EntityChangeset.class);
+        Delete delete = (Delete) changeset.getActionList().get(0);
+        assertEquals(1, delete.getWhere().getPropertyList().size());
+    }
+
 
 
 }

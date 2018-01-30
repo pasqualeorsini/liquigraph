@@ -1,3 +1,4 @@
+<!-- Voir ce qui est fait sur le Core à la fin-->
 <entityChangeset>
     <insert entity="org.liquigraph.ogm.entity.Movie">
         <property name="id" value="42"/>

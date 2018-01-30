@@ -1,0 +1,7 @@
+<entityChangeset>
+    <delete entity="org.liquigraph.ogm.entity.Movie">
+        <where>
+            <property name="language" value="English"/>
+        </where>
+    </delete>
+</entityChangeset>
