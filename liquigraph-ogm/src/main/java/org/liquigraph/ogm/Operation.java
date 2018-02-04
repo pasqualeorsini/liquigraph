@@ -10,25 +10,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Operation {
     private static final Logger LOGGER = LoggerFactory.getLogger(Operation.class);
     private final String entityName;
-    public final List<OgmProperty> properties;
-    private String label;
+    private final List<OgmProperty> properties;
+    private List<String> labels;
     private String operationType;
+    private final List<OgmProperty> whereConditions;
 
-    public Operation(String entityName, List<OgmProperty> properties, String operationType) {
+    public Operation(String entityName, List<OgmProperty> properties, List<OgmProperty>where, String operationType) throws NotAnOgmEntityException, ClassNotFoundException {
 
         this.entityName = entityName;
-        this.label =entityName.split("\\.")[entityName.split("\\.").length-1];
+        // The label is also the name of the class
+        this.labels = new ArrayList<>();
         this.properties = properties;
         this.operationType = operationType;
+        this.whereConditions = where;
+
+        this.sanityCheck();
+    }
+
+    private void sanityCheck() throws ClassNotFoundException, NotAnOgmEntityException {
+        // Is an entity
+        Class<?> entityClass = null;
+        entityClass = Class.forName(this.entityName);
+        NodeEntity[] nodeAnnotation = entityClass.getDeclaredAnnotationsByType(NodeEntity.class);
+        if(nodeAnnotation.length==0){
+            throw new NotAnOgmEntityException("This entity is not annotated with @NodeEntity or @RelationEntity : " + this.entityName);
+        }
+
+        this.labels = this.getLabelsFromEntity(entityClass,nodeAnnotation);
+
     }
 
     public Object resolveEntity() throws NotAnOgmEntityException, GraphIdException {
         Class<?> entityClass = null;
+        //TODO : garder le controle de l'existence des champs
         try {
             entityClass = Class.forName(this.entityName);
             NodeEntity[] nodeAnnotation = entityClass.getDeclaredAnnotationsByType(NodeEntity.class);
@@ -76,8 +97,28 @@ public class Operation {
 
     }
 
-    public String getLabel() {
-        return label;
+    private List<String> getLabelsFromEntity(Class<?> classes, NodeEntity[] nodeAnnotation){
+        List<String> labelsFound = new ArrayList<>();
+        if(nodeAnnotation.length!=0 && !nodeAnnotation[0].label().isEmpty()){
+            labelsFound.add(nodeAnnotation[0].label());
+        } else {
+            labelsFound.add(this.entityName.split("\\.")[entityName.split("\\.").length - 1]);
+            Class<?> currentClass = classes;
+            while(currentClass.getSuperclass()!=null){
+                if(!"Object".equals(currentClass.getSuperclass().getSimpleName())) {
+                    labelsFound.add(currentClass.getSuperclass().getSimpleName());
+                }
+                currentClass = currentClass.getSuperclass();
+
+            }
+
+        }
+        return labelsFound;
+    }
+
+
+    public List<String> getLabels() {
+        return labels;
     }
 
     public String getOperationType() {
@@ -86,5 +127,14 @@ public class Operation {
 
     public void setOperationType(String operationType) {
         this.operationType = operationType;
+    }
+
+
+    public List<OgmProperty> getProperties() {
+        return properties;
+    }
+
+    public List<OgmProperty> getWhereConditions() {
+        return whereConditions;
     }
 }

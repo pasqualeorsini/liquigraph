@@ -2,6 +2,7 @@
     <delete entity="org.liquigraph.ogm.entity.Movie">
         <where>
             <property name="language" value="English"/>
+            <property name="title" value="Matrix" />
         </where>
     </delete>
 </entityChangeset>
