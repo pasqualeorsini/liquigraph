@@ -20,6 +20,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException, NoSuchFieldException {
 
+/*
         Movie movie = new Movie("Matrix", "English");
         MetaData metaData = new MetaData("org.liquigraph.ogm");
 
@@ -36,7 +37,7 @@ public class Main {
         }
 
         Insert insert = new Insert();
-        insert.setEntity("org.liquigraph.ogm.Movie");
+        insert.setEntity("org.liquigraph.ogm.entity.Movie");
         List<Property> properties = new ArrayList<>();
         Property property = new Property();
         property.setValue("42");
@@ -53,6 +54,7 @@ public class Main {
         compiler1.useStatementFactory(new RowStatementFactory());
         List<Statement> allStatements = compiler.getAllStatements();
         System.out.println("K");
+*/
 /*
         ClassInfo classInfo = new ClassInfo(Main.class.getResourceAsStream("Movie.class"));
         System.out.println("sos");

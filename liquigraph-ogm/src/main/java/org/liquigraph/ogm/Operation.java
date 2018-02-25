@@ -3,6 +3,10 @@ package org.liquigraph.ogm;
 import org.liquigraph.ogm.exception.GraphIdException;
 import org.liquigraph.ogm.exception.MappingException;
 import org.liquigraph.ogm.exception.NotAnOgmEntityException;
+import org.liquigraph.ogm.schema.Delete;
+import org.liquigraph.ogm.schema.Insert;
+import org.liquigraph.ogm.schema.Property;
+import org.liquigraph.ogm.schema.Update;
 import org.neo4j.ogm.annotation.GraphId;
 import org.neo4j.ogm.annotation.NodeEntity;
 import org.neo4j.ogm.annotation.RelationshipEntity;
@@ -22,16 +26,46 @@ public class Operation {
     private String operationType;
     private final List<OgmProperty> whereConditions;
 
-    public Operation(String entityName, List<OgmProperty> properties, List<OgmProperty>where, String operationType) throws NotAnOgmEntityException, ClassNotFoundException {
+    public Operation(String entityName, List<Property> properties, List<Property>where, String operationType) throws NotAnOgmEntityException, ClassNotFoundException {
 
         this.entityName = entityName;
-        // The label is also the name of the class
         this.labels = new ArrayList<>();
-        this.properties = properties;
+        List<OgmProperty> ogmProperties = getOgmProperties(properties);
+        this.properties = ogmProperties;
         this.operationType = operationType;
-        this.whereConditions = where;
+        List<OgmProperty> ogmPropertiesWhere = getOgmProperties(where);
+        this.whereConditions = ogmPropertiesWhere;
 
         this.sanityCheck();
+    }
+
+    public Operation(String entityName, List<Property> properties, String operationType) throws NotAnOgmEntityException, ClassNotFoundException {
+        this(entityName,properties,null,operationType);
+    }
+
+    public Operation(Insert insert) throws NotAnOgmEntityException, ClassNotFoundException {
+        this(insert.getEntity(),insert.getProperties(),"CREATE");
+    }
+
+    public Operation(Update update) throws NotAnOgmEntityException, ClassNotFoundException {
+        this(update.getEntity(),update.getPropertyList(),update.getWhere().getPropertyList(),"UPDATE");
+    }
+
+    public Operation(Delete delete) throws NotAnOgmEntityException, ClassNotFoundException {
+        this(delete.getEntity(),null,delete.getWhere().getPropertyList(),"DELETE");
+    }
+
+    private List<OgmProperty> getOgmProperties(List<Property> properties) {
+        if(properties!=null) {
+            List<OgmProperty> ogmProperties = new ArrayList<>();
+            for (Property property : properties) {
+                OgmProperty ogmProperty = new OgmProperty(property.getName(), property.getValue());
+                ogmProperties.add(ogmProperty);
+            }
+            return ogmProperties;
+        } else {
+            return null;
+        }
     }
 
     private void sanityCheck() throws ClassNotFoundException, NotAnOgmEntityException {

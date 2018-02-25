@@ -3,6 +3,7 @@ package org.liquigraph.ogm;
 import org.junit.Test;
 import org.liquigraph.ogm.exception.GraphIdException;
 import org.liquigraph.ogm.exception.NotAnOgmEntityException;
+import org.liquigraph.ogm.schema.Property;
 import org.neo4j.ogm.cypher.query.CypherQuery;
 
 import java.util.ArrayList;
@@ -26,11 +27,11 @@ public class OgmCypherTranslatorTest {
 
         CypherQuery expectedQuery = new CypherQuery("CREATE (n:Movie) SET n = $props",parameters);
 
-        List<OgmProperty> entityProperties = new ArrayList<>();
-        entityProperties.add(new OgmProperty("title","Matrix"));
-        entityProperties.add(new OgmProperty("language","english"));
+        List<Property> entityProperties = new ArrayList<>();
+        entityProperties.add(new Property("title","Matrix"));
+        entityProperties.add(new Property("language","english"));
 
-        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.Movie", entityProperties,null,"CREATE"));
+        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.entity.Movie", entityProperties,null,"CREATE"));
         assertEquals(expectedQuery.getStatement(), actual.getStatement());
         assertEquals(expectedQuery.getParameters(),actual.getParameters());
     }
@@ -47,16 +48,16 @@ public class OgmCypherTranslatorTest {
         parameters.put("props",properties);
 
         CypherQuery expectedQuery = new CypherQuery("MATCH (n:Movie { \"language\":\"English\" }  SET n = $props",parameters);
-        List<OgmProperty> entityProperties = new ArrayList<>();
-        entityProperties.add(new OgmProperty("id","1"));
+        List<Property> entityProperties = new ArrayList<>();
+        entityProperties.add(new Property("id","1"));
 
-        entityProperties.add(new OgmProperty("title","Matrix"));
-        entityProperties.add(new OgmProperty("language","english"));
+        entityProperties.add(new Property("title","Matrix"));
+        entityProperties.add(new Property("language","english"));
 
-        List<OgmProperty> whereProperties = new ArrayList<>();
-        whereProperties.add(new OgmProperty("language","English"));
+        List<Property> whereProperties = new ArrayList<>();
+        whereProperties.add(new Property("language","English"));
 
-        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.Movie", entityProperties, whereProperties,"UPDATE"));
+        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.entity.Movie", entityProperties, whereProperties,"UPDATE"));
         assertEquals(expectedQuery.getStatement(), actual.getStatement());
         assertEquals(expectedQuery.getParameters(),actual.getParameters());
 
@@ -66,12 +67,12 @@ public class OgmCypherTranslatorTest {
     public void testDeleteOperation() throws NotAnOgmEntityException, GraphIdException, ClassNotFoundException {
         OgmCypherTranslator operationTranslator = new OgmCypherTranslator();
 
-        List<OgmProperty> whereProperties = new ArrayList<>();
-        whereProperties.add(new OgmProperty("language","English"));
-        whereProperties.add(new OgmProperty("title","Matrix"));
+        List<Property> whereProperties = new ArrayList<>();
+        whereProperties.add(new Property("language","English"));
+        whereProperties.add(new Property("title","Matrix"));
 
         CypherQuery expectedQuery = new CypherQuery("MATCH (n:Movie { \"language\":\"English\", \"title\":\"Matrix\" } DELETE n",new HashMap<>());
-        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.Movie", null, whereProperties, "DELETE"));
+        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.entity.Movie", null, whereProperties, "DELETE"));
 
         assertEquals(expectedQuery.getStatement(), actual.getStatement());
         assertEquals(expectedQuery.getParameters(),actual.getParameters());
@@ -86,9 +87,9 @@ public class OgmCypherTranslatorTest {
         parameters.put("props",new HashMap<>());
         CypherQuery expectedQuery = new CypherQuery("CREATE (n:Custom) SET n = $props", parameters);
 
-        List<OgmProperty> entityProperties = new ArrayList<>();
+        List<Property> entityProperties = new ArrayList<>();
 
-        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.MovieCustomLabel", entityProperties, null,"CREATE"));
+        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.entity.MovieCustomLabel", entityProperties, null,"CREATE"));
         assertEquals(expectedQuery.getStatement(), actual.getStatement());
         assertEquals(expectedQuery.getParameters(),actual.getParameters());
 
@@ -102,9 +103,9 @@ public class OgmCypherTranslatorTest {
         parameters.put("props",new HashMap<>());
         CypherQuery expectedQuery = new CypherQuery("CREATE (n:MovieWithParent:Media) SET n = $props", parameters);
 
-        List<OgmProperty> entityProperties = new ArrayList<>();
+        List<Property> entityProperties = new ArrayList<>();
 
-        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.MovieWithParent", entityProperties, null,"CREATE"));
+        CypherQuery actual = operationTranslator.translate(new Operation("org.liquigraph.ogm.entity.MovieWithParent", entityProperties, null,"CREATE"));
         assertEquals(expectedQuery.getStatement(), actual.getStatement());
         assertEquals(expectedQuery.getParameters(),actual.getParameters());
 

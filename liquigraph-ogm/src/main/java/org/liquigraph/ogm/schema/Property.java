@@ -6,6 +6,14 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType
 public class Property {
 
+    public Property(){
+
+    }
+    public Property(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
     private String name;
 
     private String value;

@@ -3,6 +3,7 @@ package org.liquigraph.ogm;
 import org.junit.Test;
 import org.liquigraph.ogm.exception.GraphIdException;
 import org.liquigraph.ogm.exception.NotAnOgmEntityException;
+import org.liquigraph.ogm.schema.Property;
 
 import java.util.ArrayList;
 
@@ -25,9 +26,9 @@ public class OperationTest {
 
     @Test(expected = GraphIdException.class)
     public void aGraphIdColumnCantBeMapped() throws NotAnOgmEntityException, GraphIdException, ClassNotFoundException {
-        ArrayList<OgmProperty> properties = new ArrayList<>();
-        properties.add(new OgmProperty("id",10));
-        properties.add(new OgmProperty("aProperty","toto"));
+        ArrayList<Property> properties = new ArrayList<>();
+        properties.add(new Property("id","10"));
+        properties.add(new Property("aProperty","toto"));
         Operation operation = new Operation("org.liquigraph.ogm.entity.EntityWithGraphId", properties,null,null);
         operation.resolveEntity();
 
