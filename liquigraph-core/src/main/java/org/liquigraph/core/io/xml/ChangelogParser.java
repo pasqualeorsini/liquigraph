@@ -62,10 +62,13 @@ public final class ChangelogParser {
     private Changelog parseChangelog(ChangelogLoader changelogLoader, String masterChangelog) {
         try {
             Node document = preprocessor.preProcess(masterChangelog, changelogLoader);
+
+            //TODO Need to add validation for OGM
             Collection<String> errors = validator.validateSchema(document);
             if (!errors.isEmpty()) {
                 throw new IllegalArgumentException(formatErrorMessage(errors));
             }
+            //TODO Add a preprocessor that extracts the changeset from the OGM document
             Changelog changelog = (Changelog) unmarshaller.unmarshal(document);
             fixUpChangesets(changelog);
             return changelog;

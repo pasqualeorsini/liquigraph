@@ -4,6 +4,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.liquigraph.core.model.Changeset;
+import org.liquigraph.ogm.exception.GraphIdException;
+import org.liquigraph.ogm.exception.NotAnOgmEntityException;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +23,8 @@ public class OgmPreprocessorTest {
     public TemporaryFolder temp = new TemporaryFolder();
 
     @Test
-    public void translates_ogm_migration_to_Cypher() throws IOException {
+    public void translates_ogm_migration_to_Cypher() throws IOException, NotAnOgmEntityException, GraphIdException, ClassNotFoundException {
+/*
         File migration = file("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<changelog xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
                 "           xsi:noNamespaceSchemaLocation=\"http://www.liquigraph.org/schema/1.0/liquigraph.xsd\"\n" +
@@ -33,11 +36,13 @@ public class OgmPreprocessorTest {
                 "        </ogm:insert>\n" +
                 "    </changeset>\n" +
                 "</changelog>");
-
+*/
+        File migration = new File(this.getClass().getResource("/insert_entity.xml").getFile());
         List<Changeset> statements = new LiquigraphOgmPreprocessor().preprocess(migration);
 
-        assertThat(statements)
-                .containsExactly(changeset("hello-world", "you", "CREATE (:Movie {title:'Matrix'}) "));
+        //FIXME : add prop
+    assertThat(statements)
+        .containsExactly(changeset("hello-world", "you", "CREATE (n:Movie) SET n = $props"));
     }
 
     private File file(String s) throws IOException {
