@@ -18,7 +18,8 @@
 -->
 <changelog>
     <changeset id="first-changelog" author="fbiville">
-        <query>CREATE (:Person {name:'Edgar Poe'}),
+        <query>
+        CREATE (:Person {name:'Edgar Poe'}),
                       (:Person {name:'Lorie'}),
                       (:Person {name:'Tommy'})
         </query>

@@ -21,7 +21,9 @@ import com.google.common.base.Splitter;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -34,6 +36,7 @@ public class Changeset {
     private String id;
     private String author;
     private Collection<String> queries = newArrayList();
+    private QueryType query;
     private String checksum;
     private Collection<String> executionsContexts = newArrayList();
     private boolean runOnChange;
@@ -59,10 +62,33 @@ public class Changeset {
         this.author = author;
     }
 
-    @XmlElement(name = "query", required = true)
-    public Collection<String> getQueries() {
-        return queries;
+    @XmlElement(name = "query")
+    public QueryType getQuery(){
+        return query;
     }
+
+    public void setQuery(QueryType query){
+        this.query = query;
+    }
+
+    public Collection<String> getQueries(){
+        String query = null;
+        Template template = null;
+        QueryParameters queryParameters = null;
+        List<String> result = new ArrayList();
+        for (Object o : this.query.content) {
+            if(o instanceof String && (!"\n".equals(((String) o).trim()))){
+                query = (String) o;
+            } else if(o instanceof Template){
+                template = (Template) o;
+            } else if(o instanceof QueryParameters){
+                queryParameters = (QueryParameters) o;
+            }
+        }
+        result.add(query);
+        return result;
+    }
+
 
     public void setQueries(Collection<String> queries) {
         checkArgument(queries != null, "Queries cannot be null");
